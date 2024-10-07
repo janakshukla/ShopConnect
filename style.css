@@ -8,6 +8,7 @@
 html, body {
       overflow-x: hidden;
     width: 100vw;
+    background-color: rgba(31, 41, 55, 0.9);
     height: 100vh;
   }
 .container {
