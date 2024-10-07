@@ -24,6 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileMenu.classList.toggle('hidden');
     });
 
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!hamburger.contains(event.target) && !mobileMenu.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+        }
+    });
+
     // Scroll to section
     const scrollButtons = document.querySelectorAll('[data-section]');
     scrollButtons.forEach(button => {
@@ -67,9 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Sarah L.', role: 'Fashion Enthusiast', quote: 'ShopConnect has revolutionized how I discover new boutiques. It\'s like having a personal shopping guide in my pocket!' },
         { name: 'Mike R.', role: 'Food Blogger', quote: 'As a food blogger, ShopConnect has been invaluable in finding hidden culinary gems in every city I visit.' },
         { name: 'Emma T.', role: 'Travel Vlogger', quote: 'ShopConnect is now an essential part of my travel planning. It helps me create content by finding unique local shops and restaurants.' },
-        { name: 'John D.', role: 'Local Business Owner', quote: 'ShopConnect has helped my small business reach new customers. It\'s been a game-changer for us!' },
-        { name: 'Lisa M.', role: 'Foodie', quote: 'I love trying new restaurants, and ShopConnect makes it so easy to find hidden gems wherever I go.' },
-        { name: 'Alex K.', role: 'Digital Nomad', quote: 'As someone who travels frequently, ShopConnect has become my go-to app for exploring new cities like a local.' },
     ];
 
     testimonials.forEach(testimonial => {
@@ -209,13 +213,16 @@ document.addEventListener('DOMContentLoaded', () => {
         material.uniforms.uTime.value = time * 0.001;
         renderer.render(scene, camera);
     }
-   
 
     animate();
 
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
+    function resizeHandler() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        camera.aspect = width / height;
         camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+        renderer.setSize(width, height);
+    }
+
+    window.addEventListener('resize', resizeHandler);
 });
