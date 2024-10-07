@@ -39,19 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Scroll to top button
-    const scrollToTopButton = document.getElementById('scroll-to-top');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 200) {
-            scrollToTopButton.classList.remove('hidden');
-        } else {
-            scrollToTopButton.classList.add('hidden');
-        }
-    });
-    scrollToTopButton.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
     // Populate features
     const featuresGrid = document.getElementById('features-grid');
     const features = [
@@ -171,5 +158,63 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 0,
         stagger: 0.2,
         duration: 0.8,
+    });
+
+    // Water effect
+    const waterEffect = document.getElementById('water-effect');
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    waterEffect.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 1;
+
+    const geometry = new THREE.PlaneGeometry(2, 2, 128, 128);
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            uTime: { value: 0 },
+        },
+        vertexShader: `
+            uniform float uTime;
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                vec3 pos = position;
+                float freq = 2.0;
+                float amp = 0.05;
+                float angle = (uTime + position.x) * freq;
+                pos.z += sin(angle) * amp;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform float uTime;
+            varying vec2 vUv;
+            void main() {
+                vec2 uv = vUv;
+                vec3 color = vec3(0.0, 0.5, 1.0);
+                float alpha = 0.2 + 0.1 * sin(uTime + uv.x * 10.0 + uv.y * 10.0);
+                gl_FragColor = vec4(color, alpha);
+            }
+        `,
+        transparent: true,
+    });
+
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    function animate(time) {
+        requestAnimationFrame(animate);
+        material.uniforms.uTime.value = time * 0.001;
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
     });
 });
