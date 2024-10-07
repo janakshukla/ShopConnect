@@ -209,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         material.uniforms.uTime.value = time * 0.001;
         renderer.render(scene, camera);
     }
+   
 
     animate();
 
