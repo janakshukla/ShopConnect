@@ -2,6 +2,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Lucide icons
     lucide.createIcons();
 
+    // Initialize GSAP and ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Loading animation
+    const loadingScreen = document.getElementById('loading-screen');
+    gsap.to(loadingScreen, {
+        opacity: 0,
+        duration: 1,
+        delay: 1,
+        onComplete: () => {
+            loadingScreen.style.display = 'none';
+            animateHeroSection();
+        }
+    });
+
+    // Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    hamburger.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
     // Scroll to section
     const scrollButtons = document.querySelectorAll('[data-section]');
     scrollButtons.forEach(button => {
@@ -10,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const section = document.getElementById(sectionId);
             if (section) {
                 section.scrollIntoView({ behavior: 'smooth' });
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
             }
         });
     });
@@ -27,27 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // Animate sections on scroll
-    const sections = document.querySelectorAll('section');
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-
-    const sectionObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate-fade-in');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    sections.forEach(section => {
-        sectionObserver.observe(section);
-    });
-
     // Populate features
     const featuresGrid = document.getElementById('features-grid');
     const features = [
@@ -61,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     features.forEach(feature => {
         const featureElement = document.createElement('div');
-        featureElement.className = 'bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700';
+        featureElement.className = 'feature-card bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700';
         featureElement.innerHTML = `
             <i data-lucide="${feature.icon}" class="w-12 h-12 text-orange-400 mb-4"></i>
             <h4 class="text-xl font-semibold mb-2 text-blue-400">${feature.title}</h4>
@@ -76,6 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Sarah L.', role: 'Fashion Enthusiast', quote: 'ShopConnect has revolutionized how I discover new boutiques. It\'s like having a personal shopping guide in my pocket!' },
         { name: 'Mike R.', role: 'Food Blogger', quote: 'As a food blogger, ShopConnect has been invaluable in finding hidden culinary gems in every city I visit.' },
         { name: 'Emma T.', role: 'Travel Vlogger', quote: 'ShopConnect is now an essential part of my travel planning. It helps me create content by finding unique local shops and restaurants.' },
+        { name: 'John D.', role: 'Local Business Owner', quote: 'ShopConnect has helped my small business reach new customers. It\'s been a game-changer for us!' },
+        { name: 'Lisa M.', role: 'Foodie', quote: 'I love trying new restaurants, and ShopConnect makes it so easy to find hidden gems wherever I go.' },
+        { name: 'Alex K.', role: 'Digital Nomad', quote: 'As someone who travels frequently, ShopConnect has become my go-to app for exploring new cities like a local.' },
     ];
 
     testimonials.forEach(testimonial => {
@@ -91,4 +98,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Re-initialize Lucide icons after dynamic content is added
     lucide.createIcons();
+
+    // Animations
+    function animateHeroSection() {
+        const tl = gsap.timeline();
+        tl.from('.hero-image-1', { opacity: 0, scale: 1.2, duration: 1 })
+          .from('.hero-image-2', { opacity: 0, scale: 1.2, duration: 1 }, '-=0.5')
+          .from('.hero-image-3', { opacity: 0, scale: 1.2, duration: 1 }, '-=0.5')
+          .from('#hero h2', { opacity: 0, y: 50, duration: 1 }, '-=0.5')
+          .from('#hero p', { opacity: 0, y: 50, duration: 1 }, '-=0.5');
+    }
+
+    gsap.from('header', {
+        scrollTrigger: {
+            trigger: 'header',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+        },
+        backgroundColor: 'rgba(31, 41, 55, 0)',
+        duration: 1,
+    });
+
+    gsap.from('.about-content', {
+        scrollTrigger: {
+            trigger: '#about',
+            start: 'top center',
+        },
+        x: -100,
+        opacity: 0,
+        duration: 1,
+    });
+
+    gsap.from('.our-vision', {
+        scrollTrigger: {
+            trigger: '#about',
+            start: 'top center',
+        },
+        opacity: 0,
+        scale: 0.8,
+        duration: 1,
+    });
+
+    gsap.from('.feature-card', {
+        scrollTrigger: {
+            trigger: '#features',
+            start: 'top center',
+        },
+        opacity: 0,
+        scale: 0.8,
+        stagger: 0.2,
+        duration: 0.8,
+    });
+
+    gsap.from('#testimonials-grid > div', {
+        scrollTrigger: {
+            trigger: '#testimonials',
+            start: 'top center',
+        },
+        x: 100,
+        opacity: 0,
+        stagger: 0.2,
+        duration: 0.8,
+    });
+
+    gsap.from('.contact-info, .contact-form', {
+        scrollTrigger: {
+            trigger: '#contact',
+            start: 'top center',
+        },
+        y: 50,
+        opacity: 0,
+        stagger: 0.2,
+        duration: 0.8,
+    });
 });
